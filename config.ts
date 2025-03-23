@@ -9,6 +9,8 @@ const config = {
     bannedHostnames: [] as string[],
   },
 
+  apiKey: process.env.API_KEY ?? "changeme",
+
   mysql: {
     host: process.env.MYSQL_HOST ?? "localhost",
     user: process.env.MYSQL_USER ?? "root",
