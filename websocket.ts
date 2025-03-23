@@ -9,10 +9,7 @@ const inArray = require("in_array");
 /**
  * Callback to initialise new websocket connections
  */
-export default function websocket(
-  websocket: HostipWebSocket,
-  request: IncomingMessage
-) {
+export default function websocket(websocket: HostipWebSocket, request: IncomingMessage) {
   websocket.isAlive = true;
   websocket.connectionStart = moment().unix();
 
@@ -25,9 +22,7 @@ export default function websocket(
       const json = JSON.stringify(object);
       websocket.send(json);
     } catch (error) {
-      console.error(
-        "Caught error when sending a websocket message to the client"
-      );
+      console.error("Caught error when sending a websocket message to the client");
       console.error(error);
     }
   };
@@ -72,9 +67,7 @@ export default function websocket(
       log(Date.now() + " Received " + message.type + " message:", "info");
       log(message, "info");
     } catch (error) {
-      console.error(
-        "Caught error when logging websocket message for debug mode"
-      );
+      console.error("Caught error when logging websocket message for debug mode");
       console.error(error);
     }
   });

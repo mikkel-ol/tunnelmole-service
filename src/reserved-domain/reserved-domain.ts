@@ -18,16 +18,11 @@ const ERROR = "error";
  *
  * @param reservedDomain
  */
-const reserveDomain = async (
-  reservedDomain: ReservedDomain,
-): Promise<string> => {
+const reserveDomain = async (reservedDomain: ReservedDomain): Promise<string> => {
   const { apiKey, subdomain } = reservedDomain;
 
   // If there is an existing domain belonging to a different apiKey, do not reserve the domain
-  const existingDomain = await findSubdomainsNotBelongingToApiKey(
-    apiKey,
-    subdomain,
-  );
+  const existingDomain = await findSubdomainsNotBelongingToApiKey(apiKey, subdomain);
   if (existingDomain) {
     return DOMAIN_ALREADY_RESERVED;
   }
@@ -38,9 +33,7 @@ const reserveDomain = async (
     const domainLimit = await getDomainLimit(apiKey);
 
     if (domainCount > domainLimit) {
-      console.info(
-        `API Key ${apiKey} has a limit of ${domainLimit} but tried to reserve ${domainCount} domains`,
-      );
+      console.info(`API Key ${apiKey} has a limit of ${domainLimit} but tried to reserve ${domainCount} domains`);
       return TOO_MANY_DOMAINS;
     }
 
@@ -52,10 +45,4 @@ const reserveDomain = async (
   }
 };
 
-export {
-  DOMAIN_ALREADY_RESERVED,
-  TOO_MANY_DOMAINS,
-  SUCCESS,
-  ERROR,
-  reserveDomain,
-};
+export { DOMAIN_ALREADY_RESERVED, TOO_MANY_DOMAINS, SUCCESS, ERROR, reserveDomain };

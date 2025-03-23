@@ -13,8 +13,7 @@ const setupGracefulShutdown = () => {
       const clientMessage: ClientMessage = {
         type: "clientMessage",
         logLevel: "info",
-        message:
-          "The server is restarting for maintenance. Please reconnect shortly.",
+        message: "The server is restarting for maintenance. Please reconnect shortly.",
       };
       try {
         websocket.sendMessage(clientMessage);

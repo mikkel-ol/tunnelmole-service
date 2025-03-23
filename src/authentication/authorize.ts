@@ -11,9 +11,7 @@ const authorize = async (
   randomSubdomain: string,
 ): Promise<boolean> => {
   const { apiKey } = message;
-  const apiKeys = JSON.parse(
-    fs.readFileSync(ROOT_DIR + "/src/authentication/apiKeys.json").toString(),
-  );
+  const apiKeys = JSON.parse(fs.readFileSync(ROOT_DIR + "/src/authentication/apiKeys.json").toString());
 
   const apiKeyRecord = apiKeys.find((record: any) => {
     return record.apiKey == apiKey;

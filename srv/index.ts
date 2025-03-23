@@ -43,11 +43,8 @@ const wss = new WebSocket.Server(
     },
   },
   () => {
-    console.log(
-      "Tunnelmole Service listening on websocket port " +
-        config.server.websocketPort
-    );
-  }
+    console.log("Tunnelmole Service listening on websocket port " + config.server.websocketPort);
+  },
 );
 
 wss.on("connection", websocket);

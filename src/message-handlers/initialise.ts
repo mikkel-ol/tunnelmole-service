@@ -29,10 +29,7 @@ const RANDOM_SUBDOMAIN_LENGTH = 6;
 
 const { verify } = require("reverse-dns-lookup");
 
-export default async function initialise(
-  message: InitialiseMessage,
-  websocket: HostipWebSocket,
-) {
+export default async function initialise(message: InitialiseMessage, websocket: HostipWebSocket) {
   let subdomain = generateRandomSubdomain(websocket);
   const authorized = await authorize(message, websocket, subdomain);
 
@@ -123,13 +120,7 @@ export default async function initialise(
   const existingConnection = proxy.findConnectionByHostname(hostname);
   if (typeof existingConnection == "undefined") {
     await addClientLog(clientId, "initialized", hostname);
-    proxy.addConnection(
-      hostname,
-      websocket,
-      clientId,
-      message.apiKey,
-      websocket.ipAddress,
-    );
+    proxy.addConnection(hostname, websocket, clientId, message.apiKey, websocket.ipAddress);
   } else if (existingConnection.clientId === clientId) {
     // Consider using api key instead to establish subdomain ownership?
     proxy.replaceWebsocket(hostname, websocket);
@@ -149,9 +140,7 @@ export default async function initialise(
 
   websocket.sendMessage(hostnameAssignedMessage);
 
-  console.info(
-    "Websocket connection initialised for client id" + message.clientId,
-  );
+  console.info("Websocket connection initialised for client id" + message.clientId);
 }
 
 const generateRandomSubdomain = (websocket: HostipWebSocket): string => {

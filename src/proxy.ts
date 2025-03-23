@@ -8,26 +8,18 @@ export default class Proxy {
   connections: Array<Connection> = [];
 
   findConnectionByClientId(clientId: string): Connection | undefined {
-    const connection: Connection | undefined = this.connections.find(
-      (connection) => connection.clientId === clientId,
-    );
+    const connection: Connection | undefined = this.connections.find((connection) => connection.clientId === clientId);
     return connection;
   }
 
-  findConnectionsByClientIdAndIpAddress(
-    clientId: string,
-    ipAddress: string,
-  ): Connection[] {
+  findConnectionsByClientIdAndIpAddress(clientId: string, ipAddress: string): Connection[] {
     return this.connections.filter(
-      (connection: Connection) =>
-        connection.clientId === clientId || connection.ipAddress === ipAddress,
+      (connection: Connection) => connection.clientId === clientId || connection.ipAddress === ipAddress,
     );
   }
 
   findConnectionByHostname(hostname: string): Connection | undefined {
-    const connection: Connection | undefined = this.connections.find(
-      (connection) => connection.hostname === hostname,
-    );
+    const connection: Connection | undefined = this.connections.find((connection) => connection.hostname === hostname);
     return connection;
   }
 

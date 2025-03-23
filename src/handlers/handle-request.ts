@@ -32,10 +32,7 @@ const handleRequest = async function (request: Request, response: Response) {
 
   // Get the request body, wether binary or text as a base64 string for trouble-free transmission over the WebSocket connection
   // Unless its just an empty object, then set it to an empty string
-  const body =
-    JSON.stringify(request.body) === JSON.stringify({})
-      ? ""
-      : request.body.toString("base64");
+  const body = JSON.stringify(request.body) === JSON.stringify({}) ? "" : request.body.toString("base64");
 
   const forwardedRequest: ForwardedRequestMessage = {
     requestId,
@@ -52,12 +49,10 @@ const handleRequest = async function (request: Request, response: Response) {
   // If it doesn't find a way to destroy it manually after setTimeout()
   const forwardedResponseHandler = (text: string) => {
     try {
-      const forwardedResponseMessage: ForwardedResponseMessage =
-        JSON.parse(text);
+      const forwardedResponseMessage: ForwardedResponseMessage = JSON.parse(text);
       logResponse(forwardedResponseMessage, hostname); // Log if debug logging is enabled
       const body = Buffer.from(forwardedResponseMessage.body, "base64");
-      forwardedResponseMessage.headers["x-forwarded-for"] =
-        connection.websocket.ipAddress;
+      forwardedResponseMessage.headers["x-forwarded-for"] = connection.websocket.ipAddress;
 
       // Bail if this handler is not for the request that created it
       if (forwardedResponseMessage.requestId !== requestId) {
@@ -79,12 +74,7 @@ const handleRequest = async function (request: Request, response: Response) {
       connection.websocket.removeListener("message", forwardedResponseHandler);
     } catch (error) {
       // Log errors and remove listener
-      console.error(
-        "Caught error in forwardedResponseHandler for request id " +
-          requestId +
-          ":" +
-          error.message
-      );
+      console.error("Caught error in forwardedResponseHandler for request id " + requestId + ":" + error.message);
       console.error(error);
       connection.websocket.removeListener("message", forwardedResponseHandler);
     }

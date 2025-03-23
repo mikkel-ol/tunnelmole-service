@@ -7,16 +7,12 @@ const logTelemetry = async function (request: Request, response: Response) {
   const payload = parseJson(request.body);
 
   if (payload.type === undefined) {
-    console.warn(
-      `Invalid telemetry message received: ${JSON.stringify(payload)}`,
-    );
+    console.warn(`Invalid telemetry message received: ${JSON.stringify(payload)}`);
     return;
   }
 
   if (!payload.data) {
-    console.warn(
-      `Invalid telemetry message received: ${JSON.stringify(payload)}`,
-    );
+    console.warn(`Invalid telemetry message received: ${JSON.stringify(payload)}`);
     return;
   }
 

@@ -16,21 +16,15 @@ const connectionTimeoutLoop = (clients: any): NodeJS.Timeout => {
       const now = moment().unix();
 
       // Tunnelmole connection timeout - set from config, or default to 12 hours
-      const timeout =
-        config.runtime.connectionTimeout ?? TWELVE_HOURS_IN_SECONDS;
+      const timeout = config.runtime.connectionTimeout ?? TWELVE_HOURS_IN_SECONDS;
       const connectionExpiry = websocket.connectionStart + timeout;
 
       if (now > connectionExpiry) {
-        console.info(
-          "Connection timeout of " +
-            timeout +
-            " seconds has passed, terminating connection",
-        );
+        console.info("Connection timeout of " + timeout + " seconds has passed, terminating connection");
         const message: ClientMessage = {
           type: "clientMessage",
           logLevel: "error",
-          message:
-            "Your Tunnelmole connection has timed out. The current timeout is 12 hours",
+          message: "Your Tunnelmole connection has timed out. The current timeout is 12 hours",
         };
 
         websocket.sendMessage(message);

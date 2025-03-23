@@ -8,13 +8,8 @@ interface UnReserveDomainRequest {
   subdomain: string;
 }
 
-const unreserveSubdomain = async function (
-  request: Request,
-  response: Response
-) {
-  const unReserveDomainRequest: UnReserveDomainRequest = parseJson(
-    request.body
-  );
+const unreserveSubdomain = async function (request: Request, response: Response) {
+  const unReserveDomainRequest: UnReserveDomainRequest = parseJson(request.body);
   const { apiKey, subdomain } = unReserveDomainRequest;
   await deleteReservedDomain(apiKey, subdomain);
   response.status(OK_NO_CONTENT);

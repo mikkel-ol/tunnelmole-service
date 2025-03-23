@@ -24,9 +24,7 @@ const findSubdomainsNotBelongingToApiKey = async (
 };
 
 // Find by subdomain
-const findBySubdomain = async (
-  subdomain: string,
-): Promise<ReservedDomain | undefined> => {
+const findBySubdomain = async (subdomain: string): Promise<ReservedDomain | undefined> => {
   try {
     const [rows]: any = await runPreparedStatement(
       `
@@ -43,9 +41,7 @@ const findBySubdomain = async (
 };
 
 // Count reserved domains by apiKey
-const countReservedDomainsByApiKey = async (
-  apiKey: string,
-): Promise<number> => {
+const countReservedDomainsByApiKey = async (apiKey: string): Promise<number> => {
   try {
     const [rows]: any = await runPreparedStatement(
       `
@@ -63,9 +59,7 @@ const countReservedDomainsByApiKey = async (
 
 // Add a reserved domain
 const addReservedDomain = async (reservedDomain: ReservedDomain) => {
-  const existingReservedDomain = await findBySubdomain(
-    reservedDomain.subdomain,
-  );
+  const existingReservedDomain = await findBySubdomain(reservedDomain.subdomain);
   if (existingReservedDomain !== undefined) {
     return;
   }
@@ -85,10 +79,7 @@ const addReservedDomain = async (reservedDomain: ReservedDomain) => {
  * @param apiKey
  * @param subdomain
  */
-const deleteReservedDomain = async (
-  apiKey: string,
-  subdomain: string,
-): Promise<void> => {
+const deleteReservedDomain = async (apiKey: string, subdomain: string): Promise<void> => {
   await runPreparedStatement(
     `
         DELETE FROM ${RESERVED_DOMAINS}
