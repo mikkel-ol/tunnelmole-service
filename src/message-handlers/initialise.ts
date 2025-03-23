@@ -10,72 +10,39 @@ import { bannedClientIds } from "../../security/banned-client-ids";
 import { INDEX_OF_NOT_FOUND } from "../../constants";
 import { bannedIps } from "../../security/banned-ips";
 import { bannedHostnames } from "../../security/banned-hostnames";
-import ReservedDomain from "../model/reserved-domain";
-import { addReservedDomain } from "../repository/reserved-subdomain-repository";
-import {
-  DOMAIN_ALREADY_RESERVED,
-  ERROR,
-  SUCCESS,
-  TOO_MANY_DOMAINS,
-  reserveDomain,
-} from "../reserved-domain/reserved-domain";
-import DomainAlreadyReserved from "../messages/domain-already-reserved";
-import TooManyDomains from "../messages/domain-reservation-error";
-import DomainReservationError from "../messages/domain-reservation-error";
 import { authorize } from "../authentication/authorize";
 import { generateSlug } from "random-word-slugs";
-
-const RANDOM_SUBDOMAIN_LENGTH = 6;
 
 const { verify } = require("reverse-dns-lookup");
 
 export default async function initialise(message: InitialiseMessage, websocket: HostipWebSocket) {
-  let subdomain = generateRandomSubdomain(websocket);
-  const authorized = await authorize(message, websocket, subdomain);
+  let validSubscription = false;
+  if (typeof message.apiKey === "string") {
+    validSubscription = await authorize(message.apiKey, websocket);
 
-  if (authorized === false) {
-    // You shall not pass
-    return false;
+    if (!validSubscription) {
+      const invalidSubscriptionMessage: InvalidSubscriptionMessage = {
+        type: "invalidSubscription",
+        apiKey: message.apiKey,
+      };
+
+      websocket.sendMessage(invalidSubscriptionMessage);
+    }
+  }
+
+  if (typeof message.apiKey !== "string" && message.subdomain) {
+    const invalidSubscriptionMessage: InvalidSubscriptionMessage = {
+      type: "invalidSubscription",
+      apiKey: null,
+    };
+
+    websocket.sendMessage(invalidSubscriptionMessage);
   }
 
   // By default use a random subdomain unless the subscription is valid and a subdomain is passed
-  if (typeof message.subdomain === "string") {
-    const reservedDomain: ReservedDomain = {
-      apiKey: message.apiKey,
-      subdomain: message.subdomain,
-    };
-
-    // Reserve and set the requested domain, or send back a message in case of failure
-    const result = await reserveDomain(reservedDomain);
-    switch (result) {
-      case TOO_MANY_DOMAINS:
-        const tooManyDomains: TooManyDomains = {
-          type: "tooManyDomains",
-          subdomain,
-        };
-
-        websocket.sendMessage(tooManyDomains);
-        break;
-      case DOMAIN_ALREADY_RESERVED:
-        const domainAlreadyReservedMessage: DomainAlreadyReserved = {
-          type: "domainAlreadyReserved",
-          subdomain: message.subdomain,
-        };
-
-        websocket.sendMessage(domainAlreadyReservedMessage);
-        break;
-      case SUCCESS:
-        subdomain = message.subdomain;
-        break;
-      case ERROR:
-        const domainReservationError: DomainReservationError = {
-          type: "domainReservationError",
-          subdomain,
-        };
-
-        websocket.sendMessage(domainReservationError);
-        break;
-    }
+  let subdomain = generateRandomSubdomain(websocket);
+  if (validSubscription && typeof message.subdomain === "string") {
+    subdomain = message.subdomain;
   }
 
   const clientId = message.clientId;

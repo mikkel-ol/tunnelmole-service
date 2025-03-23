@@ -4,7 +4,7 @@
  */
 import initialise from "./src/message-handlers/initialise";
 
-const messageHandlers = {
+const messageHandlers: Record<string, any> = {
   initialise,
 };
 

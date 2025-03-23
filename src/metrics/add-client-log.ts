@@ -11,7 +11,7 @@ export default async function addClientLog(clientId: string, eventKey: string, e
   }
 
   const date = moment().tz("Australia/Sydney").format("YYYY-MM-DD HH:mm:ss");
-  await connection.query(
+  connection.query(
     `INSERT INTO client_log
          VALUES (
              0,
@@ -21,5 +21,10 @@ export default async function addClientLog(clientId: string, eventKey: string, e
              "${date}"
         )
     `,
+    (error: any, results: any, fields: any) => {
+      if (error !== null) {
+        console.error(error);
+      }
+    },
   );
 }

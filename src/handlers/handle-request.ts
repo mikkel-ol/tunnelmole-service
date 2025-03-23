@@ -4,8 +4,6 @@ import Connection from "../connection";
 import ForwardedRequestMessage from "../messages/forwarded-request-message";
 import ForwardedResponseMessage from "../messages/forwarded-response-message";
 import { nanoid } from "nanoid";
-import websocket from "../../websocket";
-import { logResponse } from "../logging/log-response";
 
 const capitalize = require("capitalize");
 const tenMinutesInMilliseconds = 300000;
@@ -14,7 +12,6 @@ const handleRequest = async function (request: Request, response: Response) {
   const proxy = Proxy.getInstance();
   const url = new URL("https://" + request.headers.host);
   const hostname = url.hostname;
-  const requestId = nanoid();
   const connection: Connection = proxy.findConnectionByHostname(hostname);
 
   if (typeof connection === "undefined") {
@@ -23,24 +20,19 @@ const handleRequest = async function (request: Request, response: Response) {
     return;
   }
 
-  const headers = {};
-  for (const key in request.headers) {
-    const name = capitalize.words(key);
-    const value = request.headers[key];
-    (headers as any)[name] = value;
-  }
+  const headers: any = {};
+  for (let index = 0; index < request.rawHeaders.length; index += 2)
+    headers[request.rawHeaders[index]] = request.rawHeaders[index + 1];
 
-  // Get the request body, wether binary or text as a base64 string for trouble-free transmission over the WebSocket connection
-  // Unless its just an empty object, then set it to an empty string
-  const body = JSON.stringify(request.body) === JSON.stringify({}) ? "" : request.body.toString("base64");
-
+  const requestId = nanoid();
   const forwardedRequest: ForwardedRequestMessage = {
     requestId,
     type: "forwardedRequest",
     url: request.originalUrl,
     method: request.method,
     headers,
-    body,
+    // Empty body results in {} Object instead of empty Buffer
+    body: Buffer.isBuffer(request.body) ? request.body.toString("base64") : "",
   };
 
   connection.websocket.sendMessage(forwardedRequest);
@@ -50,14 +42,13 @@ const handleRequest = async function (request: Request, response: Response) {
   const forwardedResponseHandler = (text: string) => {
     try {
       const forwardedResponseMessage: ForwardedResponseMessage = JSON.parse(text);
-      logResponse(forwardedResponseMessage, hostname); // Log if debug logging is enabled
-      const body = Buffer.from(forwardedResponseMessage.body, "base64");
-      forwardedResponseMessage.headers["x-forwarded-for"] = connection.websocket.ipAddress;
-
       // Bail if this handler is not for the request that created it
       if (forwardedResponseMessage.requestId !== requestId) {
         return;
       }
+
+      const body = forwardedResponseMessage.body ? Buffer.from(forwardedResponseMessage.body, "base64") : null;
+      forwardedResponseMessage.headers["x-forwarded-for"] = connection.websocket.ipAddress;
 
       if (forwardedResponseMessage.type === "forwardedResponse") {
         response.status(forwardedResponseMessage.statusCode);

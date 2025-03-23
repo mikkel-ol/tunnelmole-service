@@ -1,6 +1,6 @@
 import config from "../../config";
 
-export default async function log(message: string, level: "info" | "warning" | "error" = "info") {
+export default function log(message: string, level: "info" | "warning" | "error" = "info") {
   switch (level) {
     case "info":
       if (config.runtime.debug) {
