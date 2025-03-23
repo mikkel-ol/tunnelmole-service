@@ -8,5 +8,5 @@ RUN npm install
 
 COPY . /app
 
-ENV NODE_ENV=productino
+ENV NODE_ENV=production
 ENTRYPOINT ["node", "dist/srv/index.js"]
