@@ -23,7 +23,7 @@ import DomainAlreadyReserved from "../messages/domain-already-reserved";
 import TooManyDomains from "../messages/domain-reservation-error";
 import DomainReservationError from "../messages/domain-reservation-error";
 import { authorize } from "../authentication/authorize";
-const randomstring = require("randomstring");
+import { generateSlug } from "random-word-slugs";
 
 const RANDOM_SUBDOMAIN_LENGTH = 6;
 
@@ -144,9 +144,5 @@ export default async function initialise(message: InitialiseMessage, websocket: 
 }
 
 const generateRandomSubdomain = (websocket: HostipWebSocket): string => {
-  const randomString: string = randomstring.generate(RANDOM_SUBDOMAIN_LENGTH);
-  let subdomain = randomString.toLowerCase();
-  const ipTransformed = websocket.ipAddress.replace(/\./g, "-");
-  subdomain = subdomain + "-ip-" + ipTransformed;
-  return subdomain;
+  return generateSlug(2);
 };
