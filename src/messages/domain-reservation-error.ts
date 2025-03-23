@@ -1,4 +1,4 @@
 export default interface DomainReservationError {
-    type: string,
-    subdomain: string
+  type: string;
+  subdomain: string;
 }

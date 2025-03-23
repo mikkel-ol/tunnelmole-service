@@ -1,5 +1,5 @@
 export default interface ClientMessage {
-    type: string,
-    logLevel: string,
-    message: string
+  type: string;
+  logLevel: string;
+  message: string;
 }

@@ -1,5 +1,5 @@
 ### docker-compose.yml for external services. Run Tunnelmole itself outside of Docker with node.
-version: '3.8'
+version: "3.8"
 
 services:
   mysql:

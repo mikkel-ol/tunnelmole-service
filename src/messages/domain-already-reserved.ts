@@ -1,4 +1,4 @@
 export default interface DomainAlreadyReserved {
-    type: string,
-    subdomain: string
+  type: string;
+  subdomain: string;
 }
